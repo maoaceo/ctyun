@@ -18,13 +18,13 @@
 若需要安装旧命令形式的 Compose 二进制，可执行以下命令。命令会根据当前系统和 CPU 架构自动选择对应文件：
 
 ```bash
-sudo curl -fL "https://get.daocloud.io/docker/compose/releases/download/v2.4.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo curl -fL "https://ghfast.top/https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 docker-compose version
 ```
 
-> 上游地址或网络不可用时，`curl` 会报连接错误；可稍后重试，或优先安装 Docker 官方的 Compose V2 插件并使用 `docker compose`（中间有空格）命令。
+> 此处使用 `ghfast.top` GitHub 加速地址；已实测可访问 Docker Compose v2.4.1 的 Linux x86_64 文件。下载失败时可稍后重试，或优先安装 Docker 官方的 Compose V2 插件并使用 `docker compose`（中间有空格）命令。
 
 ## 2. 创建 Compose 配置
 
