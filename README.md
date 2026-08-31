@@ -11,7 +11,22 @@
 | 最新标签 | `lusean23/ctyun-autoheal:latest` |
 | 镜像摘要 | `sha256:baea559729c08cb184490f724e7a06bd2a643085fb4c780e30625b0ccf61f4b0` |
 
-## 1. 创建 Compose 配置
+## 1. 安装 Docker Compose（可选）
+
+如果系统执行 `docker compose version` 已能输出版本号，说明已安装 Compose V2，可直接跳到下一节。
+
+若需要安装旧命令形式的 Compose 二进制，可执行以下命令。命令会根据当前系统和 CPU 架构自动选择对应文件：
+
+```bash
+sudo curl -fL "https://get.daocloud.io/docker/compose/releases/download/v2.4.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose version
+```
+
+> 上游地址或网络不可用时，`curl` 会报连接错误；可稍后重试，或优先安装 Docker 官方的 Compose V2 插件并使用 `docker compose`（中间有空格）命令。
+
+## 2. 创建 Compose 配置
 
 ```bash
 mkdir -p /opt/ctyun-autoheal
