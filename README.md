@@ -120,7 +120,7 @@ docker compose up -d
 
 `docker-compose.yml` 已包含：
 
-- 固定镜像：`lusean23/ctyun-autoheal:1.2.0`
+- 镜像标签：`lusean23/ctyun-autoheal:latest`
 - 容器自动重启：`unless-stopped`
 - 独立数据目录：`./group1:/app/data`、`./group2:/app/data`
 - 每 60 秒健康检查
