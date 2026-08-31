@@ -1,0 +1,32 @@
+services:
+  ctyun-group1:
+    image: lusean23/ctyun-autoheal:1.2.0
+    container_name: ctyun-autoheal-group1
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./group1:/app/data
+    environment:
+      CTYUN_DATA_DIR: /app/data
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/ctyun-healthcheck"]
+      interval: 60s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+
+  ctyun-group2:
+    image: lusean23/ctyun-autoheal:1.2.0
+    container_name: ctyun-autoheal-group2
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./group2:/app/data
+    environment:
+      CTYUN_DATA_DIR: /app/data
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/ctyun-healthcheck"]
+      interval: 60s
+      timeout: 10s
+      start_period: 90s
+      retries: 3

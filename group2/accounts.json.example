@@ -1,0 +1,17 @@
+{
+  "keepAliveSeconds": 60,
+  "accounts": [
+    {
+      "name": "账号一",
+      "user": "手机号",
+      "password": "密码",
+      "deviceCode": "设备码"
+    },
+    {
+      "name": "账号二",
+      "user": "手机号",
+      "password": "密码",
+      "deviceCode": "设备码"
+    }
+  ]
+}

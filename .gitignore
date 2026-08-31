@@ -1,0 +1,8 @@
+# Private runtime account credentials
+group1/accounts.json
+group2/accounts.json
+
+# Local environment files
+.env
+.env.*
+!.env.example
