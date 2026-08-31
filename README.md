@@ -1,10 +1,6 @@
-# ctyun-autoheal Docker 部署教程
+# ctyun-autoheal Docker Compose 部署教程
 
-`ctyun-autoheal` 是一个带自动健康检查与重启能力的 Docker 容器镜像。
-
-镜像启动时必须得到账号信息：可通过环境变量直接传入，也可以挂载 `accounts.json`。如果不提供任一种，镜像会提示“未读取到账号配置”。
-
-> 下方的环境变量写法不需要提前创建配置文件；但密码会出现在 Shell 历史记录中。更注重隐私时，请使用文末的 `accounts.json` 挂载方式。
+`ctyun-autoheal` 是一个带自动健康检查与重启能力的 Docker 容器镜像。Docker Compose 更适合长期运行：配置可保存、更新和重启命令也更简洁。
 
 ## 镜像信息
 
@@ -15,58 +11,97 @@
 | 最新标签 | `lusean23/ctyun-autoheal:latest` |
 | 镜像摘要 | `sha256:baea559729c08cb184490f724e7a06bd2a643085fb4c780e30625b0ccf61f4b0` |
 
-## 一条命令直接运行
-
-将 `手机号` 与 `密码` 换成自己的账号信息：
+## 1. 创建 Compose 配置
 
 ```bash
-docker run -d --name ctyun-autoheal --restart unless-stopped --init -e APP_USER='手机号' -e APP_PASSWORD='密码' -e CTYUN_DATA_DIR=/app/data --health-cmd='/usr/local/bin/ctyun-healthcheck' --health-interval=60s --health-timeout=10s --health-start-period=90s --health-retries=3 lusean23/ctyun-autoheal:1.2.0
+mkdir -p /opt/ctyun-autoheal
+cd /opt/ctyun-autoheal
+nano docker-compose.yml
 ```
 
-Docker 会自动拉取镜像。若应用要求首次短信绑定，请查看容器日志并按提示操作：
+粘贴以下内容，将 `手机号` 和 `密码` 替换为自己的账号：
+
+```yaml
+services:
+  ctyun:
+    image: lusean23/ctyun-autoheal:1.2.0
+    container_name: ctyun-autoheal
+    restart: unless-stopped
+    init: true
+    environment:
+      APP_USER: "手机号"
+      APP_PASSWORD: "密码"
+      CTYUN_DATA_DIR: /app/data
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/ctyun-healthcheck"]
+      interval: 60s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+```
+
+> 这个方式**不需要创建 `accounts.json`**。账号由 `APP_USER` 与 `APP_PASSWORD` 环境变量提供。
+
+保护配置文件，避免其他本机用户查看密码：
 
 ```bash
-docker logs -f ctyun-autoheal
+chmod 600 /opt/ctyun-autoheal/docker-compose.yml
 ```
 
-## 常用管理命令
+## 2. 启动与首次绑定
 
-查看容器健康状态：
+启动服务（Docker 会自动拉取镜像）：
+
+```bash
+cd /opt/ctyun-autoheal
+docker compose up -d
+```
+
+查看首次运行日志；如需要短信绑定，按终端日志提示完成：
+
+```bash
+docker compose logs -f
+```
+
+## 3. 常用命令
+
+后台启动：
+
+```bash
+docker compose up -d
+```
+
+查看日志：
+
+```bash
+docker compose logs -f
+```
+
+停止并删除容器：
+
+```bash
+docker compose down
+```
+
+查看健康状态：
 
 ```bash
 docker inspect --format '{{json .State.Health}}' ctyun-autoheal
 ```
 
-停止容器：
+## 4. 更新镜像
 
 ```bash
-docker stop ctyun-autoheal
+cd /opt/ctyun-autoheal
+docker compose pull
+docker compose up -d
 ```
 
-启动已停止的容器：
+## 可选：使用 `accounts.json` 配置多个账号
 
-```bash
-docker start ctyun-autoheal
-```
-
-删除容器：
-
-```bash
-docker rm -f ctyun-autoheal
-```
-
-更新镜像后重新创建：
-
-```bash
-docker pull lusean23/ctyun-autoheal:1.2.0
-docker rm -f ctyun-autoheal
-```
-
-随后重新执行上方的“一条命令直接运行”。
-
-## 可选：使用配置文件保存多个账号
-
-多个账号或不希望将密码写进命令时，才需要创建配置文件：
+仅在配置多个账号，或不希望密码写在 Compose 文件中时使用。
 
 ```bash
 mkdir -p /opt/ctyun-autoheal/ctyun-data
@@ -87,31 +122,19 @@ nano /opt/ctyun-autoheal/ctyun-data/accounts.json
 }
 ```
 
-然后将上方命令中的 `-e APP_USER=... -e APP_PASSWORD=...` 替换为：
+然后删除 Compose 中的 `APP_USER` 与 `APP_PASSWORD` 两行，并在 `init: true` 下加入：
 
-```bash
--v /opt/ctyun-autoheal/ctyun-data:/app/data
-```
-
-并建议保护文件权限：
-
-```bash
-chmod 700 /opt/ctyun-autoheal/ctyun-data
-chmod 600 /opt/ctyun-autoheal/ctyun-data/accounts.json
+```yaml
+    volumes:
+      - ./ctyun-data:/app/data
 ```
 
 ## Docker Hub Token 安全说明
 
-不要将 Docker Hub Personal Access Token 发到聊天、提交到 Git 仓库或写进镜像中。
+不要把 Docker Hub Personal Access Token 发到聊天、提交到 Git 仓库或写进镜像中。若已泄露，请立即在 [Docker Hub Token 页面](https://app.docker.com/settings/personal-access-tokens) 撤销并重新生成。
 
-如果 Token 已意外暴露，请立即到 Docker Hub 控制台撤销并重新生成：
-
-<https://app.docker.com/settings/personal-access-tokens>
-
-如不再需要从当前服务器推送 Docker 镜像，可清除本机登录状态：
+若不再需要从当前机器推送镜像：
 
 ```bash
 docker logout
 ```
-
-Docker 登录凭据通常位于 `/root/.docker/config.json`，请勿上传该文件。
