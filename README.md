@@ -29,8 +29,7 @@ docker-compose version
 ## 2. 下载配置并创建账号文件
 
 ```bash
-git clone
-https://gh-proxy.org/https://github.com/maoaceo/ctyun.git
+git clone https://gh-proxy.org/https://github.com/maoaceo/ctyun.git
 cd /opt/ctyun-autoheal
 mkdir -p group1 group2
 ```
