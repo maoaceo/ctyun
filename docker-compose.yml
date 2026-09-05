@@ -1,6 +1,6 @@
 services:
   ctyun-group1:
-    image: lusean23/ctyun-autoheal:1.3.2
+    image: lusean23/ctyun-autoheal:1.4.0
     container_name: ctyun-autoheal-group1
     restart: unless-stopped
     init: true
@@ -16,7 +16,7 @@ services:
       retries: 3
 
   ctyun-group2:
-    image: lusean23/ctyun-autoheal:1.3.2
+    image: lusean23/ctyun-autoheal:1.4.0
     container_name: ctyun-autoheal-group2
     restart: unless-stopped
     init: true
